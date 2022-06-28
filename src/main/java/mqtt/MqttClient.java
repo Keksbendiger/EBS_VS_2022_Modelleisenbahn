@@ -10,37 +10,37 @@ public class MqttClient
 {
     // Client options
     private static final String BROKER_HOST = "tcp://127.0.0.1:1883";
-    private static final String CLIENT_ID = "CLIENT-MASTER";
+    private static final String CLIENT_ID = "master";
 
     // Railway Topics for start and stopping individual Trains
-    private static final String START_TOPIC = "START_TRAIN";
-    private static final String STOP_TOPIC = "STOP_TRAIN";
+    private static final String START_TOPIC = "cmd/start";
+    private static final String STOP_TOPIC = "cmd/stop";
 
     // Axle Counter Topics for polling data
-    private static final String AXLE_COUNTER_1_TOPIC = "A_1";
-    private static final String AXLE_COUNTER_2_TOPIC = "A_2";
-    private static final String AXLE_COUNTER_3_TOPIC = "A_3";
-    private static final String AXLE_COUNTER_4_TOPIC = "A_4";
-    private static final String AXLE_COUNTER_5_TOPIC = "A_5";
-    private static final String AXLE_COUNTER_6_TOPIC = "A_6";
-    private static final String AXLE_COUNTER_7_TOPIC = "A_7";
-    private static final String AXLE_COUNTER_8_TOPIC = "A_8";
-    private static final String AXLE_COUNTER_9_TOPIC = "A_9";
-    private static final String AXLE_COUNTER_10_TOPIC = "A_10";
-    private static final String AXLE_COUNTER_11_TOPIC = "A_11";
-    private static final String AXLE_COUNTER_12_TOPIC = "A_12";
-    private static final String AXLE_COUNTER_13_TOPIC = "A_13";
-    private static final String AXLE_COUNTER_14_TOPIC = "A_14";
-    private static final String AXLE_COUNTER_15_TOPIC = "A_15";
-    private static final String AXLE_COUNTER_16_TOPIC = "A_16";
+    private static final String AXLE_COUNTER_1_TOPIC = "sensor/1";
+    private static final String AXLE_COUNTER_2_TOPIC = "sensor/2";
+    private static final String AXLE_COUNTER_3_TOPIC = "sensor/3";
+    private static final String AXLE_COUNTER_4_TOPIC = "sensor/4";
+    private static final String AXLE_COUNTER_5_TOPIC = "sensor/5";
+    private static final String AXLE_COUNTER_6_TOPIC = "sensor/6";
+    private static final String AXLE_COUNTER_7_TOPIC = "sensor/7";
+    private static final String AXLE_COUNTER_8_TOPIC = "sensor/8";
+    private static final String AXLE_COUNTER_9_TOPIC = "sensor/9";
+    private static final String AXLE_COUNTER_10_TOPIC = "sensor/10";
+    private static final String AXLE_COUNTER_11_TOPIC = "sensor/11";
+    private static final String AXLE_COUNTER_12_TOPIC = "sensor/12";
+    private static final String AXLE_COUNTER_13_TOPIC = "sensor/13";
+    private static final String AXLE_COUNTER_14_TOPIC = "sensor/14";
+    private static final String AXLE_COUNTER_15_TOPIC = "sensor/15";
+    private static final String AXLE_COUNTER_16_TOPIC = "sensor/16";
 
     // Railway Switch Topics
-    private static final String RAIL_SWITCH_1_TOPIC = "S_1";
-    private static final String RAIL_SWITCH_2_TOPIC = "S_2";
-    private static final String RAIL_SWITCH_3_TOPIC = "S_3";
-    private static final String RAIL_SWITCH_4_TOPIC = "S_4";
-    private static final String RAIL_SWITCH_5_TOPIC = "S_5";
-    private static final String RAIL_SWITCH_6_TOPIC = "S_6";
+    private static final String RAIL_SWITCH_1_TOPIC = "actuator/1";
+    private static final String RAIL_SWITCH_2_TOPIC = "actuator/2";
+    private static final String RAIL_SWITCH_3_TOPIC = "actuator/3";
+    private static final String RAIL_SWITCH_4_TOPIC = "actuator/4";
+    private static final String RAIL_SWITCH_5_TOPIC = "actuator/5";
+    private static final String RAIL_SWITCH_6_TOPIC = "actuator/6";
 
     private static MqttClient instance;
 
