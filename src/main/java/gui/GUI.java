@@ -191,6 +191,12 @@ public class GUI extends javax.swing.JFrame {
 
         Label_F.setText("F");
 
+        // Settings for all Progress Bars
+        for (Map.Entry<String, JProgressBar> entry : pbars.entrySet()) {
+            entry.getValue().setStringPainted(true);
+            entry.getValue().setString("");
+        }
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
