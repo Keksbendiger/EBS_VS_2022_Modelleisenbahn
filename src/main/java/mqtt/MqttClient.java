@@ -15,7 +15,7 @@ import java.util.Map;
 public class MqttClient
 {
     // Client options
-    private static final String BROKER_HOST = "tcp://192.168.0.10:1883";
+    private static final String BROKER_HOST = "tcp://localhost:1883";
     private static final String CLIENT_ID = "master";
 
     // Railway Topics for start and stopping individual Trains
