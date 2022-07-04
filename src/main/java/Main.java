@@ -1,5 +1,6 @@
 import gui.GUI;
 import gui.GuiHandler;
+import mqtt.MqttClient;
 
 import java.util.Random;
 
@@ -28,6 +29,8 @@ public class Main {
         }
         //</editor-fold>
         GuiHandler guiHandler = GuiHandler.getInstance();
+
+        MqttClient.getInstance();
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -61,6 +64,8 @@ public class Main {
                 e.printStackTrace();
             }
 
+            MqttClient.getInstance().testPublish("sensor/1", "bla");
+            MqttClient.getInstance().testPublish("sensor/16", "blub");
             guiHandler.setSwitchDirection(GuiHandler.ETrackSwitch.FIVE, GuiHandler.ETrackSection.F);
             guiHandler.setSwitchDirection(GuiHandler.ETrackSwitch.SIX, GuiHandler.ETrackSection.F);
             guiHandler.setTrackSectionUsed(GuiHandler.ETrackSection.G, true, "Güterzug B");
