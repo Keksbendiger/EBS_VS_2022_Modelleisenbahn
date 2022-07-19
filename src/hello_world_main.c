@@ -21,8 +21,8 @@
 #define analogInPin A0
 
 // Refactor when building
-#define sensor1 D1
-#define sensor2 D2
+#define sensor1 GPIO_NUM_5 // D1
+#define sensor2 GPIO_NUM_4 // D2
 #define sensor3 D3
 #define sensor4 D4
 
@@ -43,13 +43,13 @@ volatile uint32_t ulIdleCycleCount = 0UL;
 esp_mqtt_client_handle_t client_handle = NULL;
 
 int counter1 = 0, counter2 = 0;
-int noSightCount1 = 0; noSightCount2 = 0;
-int lastEdge1 = 0; lastEdge2 = 0;
+int noSightCount1 = 0, noSightCount2 = 0;
+int lastEdge1 = 0, lastEdge2 = 0;
 
 int NO_SIGHT_THRESHHOLD = 400;
 
-char point1_instruction;
-char point2_instruction;
+char* point1_instruction;
+char* point2_instruction;
 
 void ReadSensorInput_1(void *pvParameters)
 {
@@ -62,7 +62,8 @@ void ReadSensorInput_1(void *pvParameters)
     //check PIN
     vTaskDelayUntil(&xLastWakeTime, 5 / portTICK_PERIOD_MS);
     // wait for five Miliseconds
-    int reading = analogRead(sensor1);
+    // this is either 0 or 1
+    int reading = gpio_get_level(sensor1);
     if (reading < 300) {
       // SIGHT, POSSIBLE END OR CLEAR
       if (counter1 != 0 && ++noSightCount1 == NO_SIGHT_THRESHHOLD) {
@@ -99,7 +100,7 @@ void ReadSensorInput_2(void *pvParameters)
     xLastWakeTime = xTaskGetTickCount();
     //check PIN
     vTaskDelayUntil(&xLastWakeTime, 5 / portTICK_PERIOD_MS);
-    int reading = analogRead(sensor2);
+    int reading = gpio_get_level(sensor2);
     if (reading < 300) {
       // SIGHT, POSSIBLE END OR CLEAR
       if (counter1 != 0 && ++noSightCount2 == NO_SIGHT_THRESHHOLD) {
@@ -131,11 +132,11 @@ void TogglePoint_1(void *pvParameters)
   TickType_t xLastWakeTime;
   for (;;) {
     xLastWakeTime = xTaskGetTickCount();
-    if (point1_instruction == "R") {
+    if (&point1_instruction == 'R') {
       gpio_set_level(point1_right, 1);
       vTaskDelayUntil(&xLastWakeTime, 100 / portTICK_PERIOD_MS);
       gpio_set_level(point1_right, 0);
-    } else if (point1_instruction == "L") {
+    } else if (&point1_instruction == 'L') {
       gpio_set_level(point1_left, 1);
       vTaskDelayUntil(&xLastWakeTime, 100 / portTICK_PERIOD_MS);
       gpio_set_level(point1_left, 0);
@@ -186,19 +187,14 @@ void IncommingComm(void *pvParameters)
 
   (void) pvParameters;
   TickType_t xLastWakeTime;
-  // const TickType_t xFrequency = 100; alternate implementation
-  BaseType_t xWasDelayed;
+  // const TickType_t xFrequency = 100; alternate implementation 
 
   xLastWakeTime = xTaskGetTickCount();
   for (;;) // A Task shall never return or exit.
   {
-    //check PIN
-    vTaskDelayUntil(&xLastWakeTime, 100 / portTICK_PERIOD_MS);
-    // Test if we need to suspend everything else or the task blocks everything out
-    //mqtt read into variables activate tasks
-    //activate necessary tasks via
-    vTaskResume(TogglePoint1_handle);
+    esp_mqtt_client_start(client_handle);
 
+    vTaskDelayUntil(&xLastWakeTime, 100 / portTICK_PERIOD_MS);
   }
 }
 
@@ -209,9 +205,25 @@ void vApplicationIdleHook(void)
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data){
     esp_mqtt_event_handle_t event = event_data;
-    esp_mqtt_client_handle_t client = event->client;
+    //esp_mqtt_client_handle_t client = event->client;
   
   switch ((esp_mqtt_event_id_t)event_id){
+    case MQTT_EVENT_ANY:
+      break;
+    case MQTT_EVENT_ERROR:
+      break;
+    case MQTT_EVENT_CONNECTED:
+      break;
+    case MQTT_EVENT_DISCONNECTED:
+      break;
+    case MQTT_EVENT_SUBSCRIBED:
+      break;
+    case MQTT_EVENT_UNSUBSCRIBED:
+      break;
+    case MQTT_EVENT_PUBLISHED:
+      break;
+    case MQTT_EVENT_BEFORE_CONNECT:
+      break;
     case MQTT_EVENT_DATA:
       if(event->topic == "POINTTOPIC")
       {
@@ -234,11 +246,9 @@ void app_main()
 
   const esp_mqtt_client_config_t mqtt_config = {.uri="tcp://192.168.0.10:1883",.client_id="test"};
   client_handle = esp_mqtt_client_init(&mqtt_config);
-
   esp_mqtt_client_subscribe(client_handle, "topic", 0);
   esp_mqtt_client_register_event(client_handle, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
-
-  esp_mqtt_client_start(client_handle);
+    
 
 
 
