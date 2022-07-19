@@ -1,7 +1,7 @@
 #include "EspMQTTClient.h"
 
 #define D10 1
-#define D9  3
+#define RX 3
 #define D8 15
 #define D7 13
 #define D6 12
@@ -11,66 +11,99 @@
 #define D2 4
 #define D1 5
 #define D0 16
+#define analogInPin A0
+
 
 EspMQTTClient client(
-        "ChooChoo",       // AP SSID
-        "Verspaetung",    // AP Password
-        "192.168.0.10",   // MQTT Broker server ip
-        "ESP8266",      // Client name that uniquely identify your device
-        1883
+  "ChuuuChuuu",       // AP SSID
+  "Verspaetung",    // AP Password
+  "192.168.0.10",   // MQTT Broker server ip
+  "STATION_ONE",      // Client name that uniquely identify your device
+  1883
 );
 
-int reading;
+int count_one = 0, count_two, count_three, count_four, count_five, count_six = 0;
+int noSightCount_one = 0, noSightCount_two, noSightCount_three, noSightCount_four, noSightCount_five, noSightCount_six = 0;
+int lastEdge_one = 0, lastEdge_two, lastEdge_three, lastEdge_four, lastEdge_five, lastEdge_six = 0;
 
-int count = 0;
-int noSightCount = 0;
-int lastEdge = 0;
+//int reading;
 
+/*int count = 0;
+  int noSightCount = 0;
+  int lastEdge = 0;
+*/
 int DELAY_MS = 5;
 int NO_SIGHT_THRESHHOLD = 2000 / DELAY_MS;
 
 void setup() {
-    Serial.begin(115200);
-    tone(D8, 56000); // TODO actual frequency slightly higher than 56k
+  Serial.begin(115200);
+
+  pinMode(D7, INPUT);
+  
+  client.enableDebuggingMessages(); // Enable debugging messages sent to serial
+}
+
+void onConnectionEstablished() {
+  Serial.print("MQTT Verbunden!");
+
+  client.subscribe("actuator/1", [] (const String & payload)  {
+    actuate(D2, D3, payload);
+  });
+
+  client.subscribe("actuator/2", [](const String & payload) {
+    actuate(D0, D1, payload);
+  });
 }
 
 // Prellzeit beachten & 11.65mA für LEDs beachten
 void loop() {
-    reading = analogRead(D6);
 
-    if (reading < 10) {
-        // SIGHT, POSSIBLE END OR CLEAR
-        if (count != 0 && ++noSightCount == NO_SIGHT_THRESHHOLD) {
-            noSightCount = 0;
+  handleSensor(D5, count_one, noSightCount_one, lastEdge_one, "SENSOR 1");
+  handleSensor(D6, count_two, noSightCount_two, lastEdge_two, "SENSOR 2");
+  handleSensor(D4, count_three, noSightCount_three, lastEdge_three, "SENSOR 3");
+  //handleSensor(RX, count_four, noSightCount_four, lastEdge_four, "SENSOR 4");
+  client.loop();
+  delay(DELAY_MS);
+}
 
-            Serial.print("Zählungsende: ");
+void handleSensor(int pin, int &count, int &noSightCount, int &lastEdge, const String& topic) {
+  int reading = analogRead(pin);
 
-            // Zufällige Zählungen treten auch ohne Vorbeifahrt des Zuges auf. Dies kann natürlich auch währenddessen auftreten.
-            // Da die totale Achsenanzahl immer gerade ist wird hier einfach -1 gerechnet falls die Zahl ungerade ist.
-            if(count % 2 == 1)
-                count--;
+  //Serial.println(reading);
+  //delay(1000);
+  if (reading < 300) {
+    // SIGHT, POSSIBLE END OR CLEAR
+    if (count != 0 && ++noSightCount == NO_SIGHT_THRESHHOLD) {
+      noSightCount = 0;
 
-            Serial.println(count);
-            count = 0;
+      Serial.print(topic + " Zählungsende: ");
+      Serial.println(count);
+      count = 0;
 
-        }
-        lastEdge = 0;
-    } else {
-        // POSSIBLE BEGIN OR END
+    }
+    lastEdge = 0;
+  } else {
+    // POSSIBLE BEGIN OR END
 
-        if (lastEdge == 0) {
-            Serial.print("Zug im Weg: ");
-            Serial.println(reading);
-            count++;
-            noSightCount = 0;
-
-            // akustisches Signal durch Beeper um Achsenzählungen einfacher zu machen und die Hardware darauf abzustimmen.
-            tone(D7, 550, 50);
-        }
-
-        lastEdge = 1;
+    if (lastEdge == 0) {
+      Serial.print(topic + " Zug im Weg: ");
+      Serial.println(reading);
+      count++;
+      noSightCount = 0;
     }
 
-    client.loop();
-    delay(DELAY_MS);
+    lastEdge = 1;
+  }
+}
+
+void actuate(int rightPin, int leftPin, const String& payload) {
+  if (payload == "R") {
+    digitalWrite(rightPin, HIGH);
+    delay(100);
+    analogWrite(rightPin, LOW);
+  } else if (payload == "L") {
+    digitalWrite(leftPin, HIGH);
+    delay(100);
+    analogWrite(leftPin, LOW);
+  }
 }
