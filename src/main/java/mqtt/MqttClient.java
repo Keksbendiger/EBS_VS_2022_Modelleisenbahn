@@ -1,21 +1,23 @@
 package mqtt;
 
-import org.eclipse.paho.mqttv5.client.IMqttToken;
-import org.eclipse.paho.mqttv5.client.MqttAsyncClient;
-import org.eclipse.paho.mqttv5.client.MqttCallback;
-import org.eclipse.paho.mqttv5.client.MqttDisconnectResponse;
-import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence;
-import org.eclipse.paho.mqttv5.common.MqttException;
-import org.eclipse.paho.mqttv5.common.MqttMessage;
-import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
+import core.ETrackSwitch;
+import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 public class MqttClient
 {
+
+    //region Definitions
+    private static final String SWITCH_TOPIC_PREFIX = "actuator/";
+    private static final byte[] SWITCH_DIRECTION_LEFT = "L".getBytes();
+    private static final byte[] SWITCH_DIRECTION_RIGHT = "R".getBytes();
+
+    //endregion Definitions
+
     // Client options
-    private static final String BROKER_HOST = "tcp://localhost:1883";
+    private static final String BROKER_HOST = "tcp://192.168.0.10:1883";
     private static final String CLIENT_ID = "master";
 
     // Railway Topics for start and stopping individual Trains
@@ -84,34 +86,28 @@ public class MqttClient
 
         client.setCallback(new MqttCallback() {
             @Override
-            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-                int sensorId = Integer.parseInt(s.substring(s.indexOf('/'), s.length()+2));
-                System.out.println(sensorId + ": " + new String(mqttMessage.getPayload()));
-            }
-            // region NOT IMPLEMENTED
-            @Override
-            public void disconnected(MqttDisconnectResponse mqttDisconnectResponse) {
+            public void connectionLost(Throwable throwable) {
             }
 
             @Override
-            public void mqttErrorOccurred(MqttException e) {
-            }
+            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                int sensorId = Integer.parseInt(topic.substring(topic.indexOf('/'), topic.length()+2));
+                String msg = new String(mqttMessage.getPayload());
+                System.out.println("Sensor #" + sensorId + ": " + msg);
+
+                int msgParsed = Integer.parseInt(msg);
 
 
-
-            @Override
-            public void deliveryComplete(IMqttToken iMqttToken) {
-            }
-
-            @Override
-            public void connectComplete(boolean b, String s) {
             }
 
             @Override
-            public void authPacketArrived(int i, MqttProperties mqttProperties) {
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
             }
-            //endregion
         });
+    }
+
+    private void publish(String topic, String payload) {
+        publish(topic, payload.getBytes());
     }
 
     private void publish(String topic, byte[] payload)
@@ -128,10 +124,6 @@ public class MqttClient
         }
     }
 
-    public void testPublish(String topic, String payload) {
-        publish(topic, payload.getBytes());
-    }
-
     // TODO Maybe move functions into abstract class or interface, there is no real need for them all to be in this file.
     public void sendTrainStart(String identifier)
     {
@@ -141,5 +133,13 @@ public class MqttClient
     public void sendTrainStop(String identifier)
     {
         publish(STOP_TOPIC, identifier.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void sendSwitchActuator(int id, boolean toLeft) {
+        publish(SWITCH_TOPIC_PREFIX + id, toLeft ? SWITCH_DIRECTION_LEFT : SWITCH_DIRECTION_RIGHT);
+    }
+
+    public void sendSwitchActuator(ETrackSwitch eTrackSwitch, boolean toLeft) {
+        sendSwitchActuator(eTrackSwitch.getId(), toLeft);
     }
 }

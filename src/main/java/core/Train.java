@@ -2,13 +2,19 @@ package core;
 
 import mqtt.MqttClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Train {
     public enum TrainState {MOVING, BLOCKED, TRAINSTATION}
 
-    ;
-
     public enum TrainDirection {CLOCKWISE, COUNTERCLOCKWISE}
 
+    public static Map<String, Train> trains = new HashMap<>();
+
+    public static Train get(String identifier) {
+        return trains.get(identifier);
+    }
 
     private final String identifier;
     private final int priority;
@@ -23,6 +29,8 @@ public class Train {
         this.numLength = numLength;
         this.direction = direction;
         this.state = TrainState.TRAINSTATION;
+
+        trains.put(identifier, this);
     }
 
     public boolean block() {
@@ -39,7 +47,7 @@ public class Train {
         // logik checks für spezielle Übergänge (z.B. sollte Clockwise -> Counterclockwise nicht vorkommen)
 
         switch (newState) {
-            case BLOCKED:
+            case BLOCKED:   //fall through
             case TRAINSTATION:
                 MqttClient.getInstance().sendTrainStop(identifier);
                 break;
@@ -50,5 +58,17 @@ public class Train {
 
         this.state = newState;
         return true;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public int getNumLength() {
+        return numLength;
     }
 }

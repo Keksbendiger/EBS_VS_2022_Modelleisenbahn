@@ -16,6 +16,10 @@ public class TrackSectionEnterRequest {
     }
 
     public void accept() {
-        entering.setBlocked(true);
+        entering.block(train);
+    }
+
+    public void leaveOld() {
+        leaving.free();
     }
 }

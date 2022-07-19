@@ -1,8 +1,9 @@
 package gui;
 
+import core.ETrackSection;
+import core.ETrackSwitch;
+
 public class GuiHandler {
-    public enum ETrackSection {A, B, C, D, E, F, G, H, I}
-    public enum ETrackSwitch {ONE, TWO, THREE, FOUR, FIVE, SIX}
 
     static GuiHandler instance = null;
 
