@@ -3,9 +3,7 @@ package core;
 import gui.GuiHandler;
 import mqtt.MqttClient;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //--------------------------------------------------//
@@ -31,6 +29,7 @@ public class TrackSwitch {
                 }
             }
         }
+        System.err.println("No TrackSwitch found: from " + from.toString() + " to " + to.toString());
         return null;
     }
 
@@ -40,7 +39,7 @@ public class TrackSwitch {
     private TrackSection outgoing_R;        // used with directive 'R'
 
     private boolean directionIsL;
-    private boolean isTraversing = false;
+    private boolean isTraversing = false;   // TODO
 
 //region Construct
 
@@ -49,6 +48,8 @@ public class TrackSwitch {
         this.ingoing = ingoing;
         this.outgoing_L = outgoing_L;
         this.outgoing_R = outgoing_R;
+
+        inverseDirection();
 
         switches.put(identifier, this);
     }
@@ -60,21 +61,19 @@ public class TrackSwitch {
         GuiHandler.getInstance().setSwitchDirection(identifier, directionIsL ? outgoing_L.getIdentifier() : outgoing_R.getIdentifier());
     }
 
-    public boolean switchToSection(TrackSection section) {
-        if(isTraversing) return false;
-        if(section == outgoing_L) {
+    public void switchToSection(TrackSection sectionTo, TrackSection sectionFrom) {
+        // TODO bei gleis B beide Weichen zusammen schalten
+        if(isTraversing) return;
+        if(sectionTo == outgoing_L || sectionFrom == outgoing_L) {
             if(!directionIsL) {
                 inverseDirection();
             }
-            return true;
-        } else if(section == outgoing_R) {
+        } else if(sectionFrom == outgoing_R || sectionTo == outgoing_R) {
             if(directionIsL) {
                 inverseDirection();
             }
-            return true;
         }
         // TODO throw exception
-        return false;
     }
 
     public ETrackSwitch getIdentifier() {

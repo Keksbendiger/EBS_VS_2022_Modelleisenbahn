@@ -1,5 +1,6 @@
 package mqtt;
 
+import core.Controller;
 import core.ETrackSwitch;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
@@ -72,38 +73,45 @@ public class MqttClient
         {
             client = new MqttAsyncClient(BROKER_HOST, CLIENT_ID, new MemoryPersistence());
 
+            client.setCallback(new MqttCallback() {
+                @Override
+                public void connectionLost(Throwable throwable) {
+                    try {
+                        client.connect();
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                    int sensorId = Integer.parseInt(topic.split("/")[1]);
+                    String msg = new String(mqttMessage.getPayload());
+                    System.out.println("Sensor #" + sensorId + ": " + msg);
+
+                    int msgParsed = Integer.parseInt(msg);
+
+                    Controller.get().receivedCount(sensorId, msgParsed);
+                }
+
+                @Override
+                public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+                }
+            });
+
             // Block Thread until connection has been successfully established
             client.connect().waitForCompletion();
 
             for (int i = 1; i <= 16; i++) {
-                client.subscribe("sensor/" + i, 2);
+                String topic = "sensor/" + i;
+                client.subscribe(topic, 2);
+                System.out.println("MQTT Client subscribing to [" + topic + "]");
             }
         }
         catch(MqttException e)
         {
             e.printStackTrace();
         }
-
-        client.setCallback(new MqttCallback() {
-            @Override
-            public void connectionLost(Throwable throwable) {
-            }
-
-            @Override
-            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                int sensorId = Integer.parseInt(topic.substring(topic.indexOf('/'), topic.length()+2));
-                String msg = new String(mqttMessage.getPayload());
-                System.out.println("Sensor #" + sensorId + ": " + msg);
-
-                int msgParsed = Integer.parseInt(msg);
-
-
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-            }
-        });
     }
 
     private void publish(String topic, String payload) {
@@ -116,6 +124,7 @@ public class MqttClient
         {
             // TODO permanent QoS or depending on what command is being sent?
             client.publish(topic, payload, 2, false);
+            System.out.println("Published " + new String(payload) + " on " + topic);
         }
         catch(MqttException e)
         {
@@ -135,11 +144,19 @@ public class MqttClient
         publish(STOP_TOPIC, identifier.getBytes(StandardCharsets.UTF_8));
     }
 
+    public void emergencyStopAllTrains() {
+        publish(STOP_TOPIC, "*");
+    }
+
     public void sendSwitchActuator(int id, boolean toLeft) {
         publish(SWITCH_TOPIC_PREFIX + id, toLeft ? SWITCH_DIRECTION_LEFT : SWITCH_DIRECTION_RIGHT);
     }
 
     public void sendSwitchActuator(ETrackSwitch eTrackSwitch, boolean toLeft) {
         sendSwitchActuator(eTrackSwitch.getId(), toLeft);
+    }
+
+    public void initializeBus() {
+        sendTrainStart("*");
     }
 }

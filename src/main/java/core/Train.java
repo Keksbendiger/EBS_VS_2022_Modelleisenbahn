@@ -6,42 +6,45 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Train {
-    public enum TrainState {MOVING, BLOCKED, TRAINSTATION}
 
     public enum TrainDirection {CLOCKWISE, COUNTERCLOCKWISE}
 
     public static Map<String, Train> trains = new HashMap<>();
 
     public static Train get(String identifier) {
-        return trains.get(identifier);
+        Train train = trains.get(identifier);
+        if(train == null) System.err.println("Train with name " + identifier + " not found.");
+        return train;
     }
 
     private final String identifier;
+    private final int trainId;
     private final int priority;
     private final int numLength; // Wagons oder Achsen oder whatever wir halt zählen können
 
     private TrainDirection direction;
-    private TrainState state;
+    private ETrainState state;
 
-    public Train(String identifier, int priority, int numLength, TrainDirection direction) {
+    public Train(String identifier, int trainId, int priority, int numLength, TrainDirection direction) {
         this.identifier = identifier;
+        this.trainId = trainId;
         this.priority = priority;
         this.numLength = numLength;
         this.direction = direction;
-        this.state = TrainState.TRAINSTATION;
+        this.state = ETrainState.TRAINSTATION;
 
         trains.put(identifier, this);
     }
 
     public boolean block() {
-        return switchState(TrainState.BLOCKED);
+        return switchState(ETrainState.BLOCKED);
     }
 
     public boolean unblock() {
-        return switchState(TrainState.MOVING);
+        return switchState(ETrainState.MOVING);
     }
 
-    private boolean switchState(TrainState newState) {
+    private boolean switchState(ETrainState newState) {
         if (this.state == newState) return false;
 
         // logik checks für spezielle Übergänge (z.B. sollte Clockwise -> Counterclockwise nicht vorkommen)
@@ -49,14 +52,15 @@ public class Train {
         switch (newState) {
             case BLOCKED:   //fall through
             case TRAINSTATION:
-                MqttClient.getInstance().sendTrainStop(identifier);
+                MqttClient.getInstance().sendTrainStop(String.valueOf(trainId));
                 break;
             case MOVING:
-                MqttClient.getInstance().sendTrainStart(identifier);
+                MqttClient.getInstance().sendTrainStart(String.valueOf(trainId));
                 break;
         }
 
         this.state = newState;
+        System.out.println("Train " + identifier + " changed state to " + newState.toString());
         return true;
     }
 
@@ -70,5 +74,9 @@ public class Train {
 
     public int getNumLength() {
         return numLength;
+    }
+
+    public ETrainState getState() {
+        return state;
     }
 }

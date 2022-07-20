@@ -35,16 +35,16 @@ public class Main {
         guiHandler.setGui(new GUI());
         guiHandler.getGui().setVisible(true);
 
-        guiHandler.setTrackSectionUsed(ETrackSection.I, true, "ICE");
-        guiHandler.setTrackSectionUsed(ETrackSection.C, true, "Güterzug A");
-        guiHandler.setTrackSectionUsed(ETrackSection.G, true, "Güterzug B");
+//        guiHandler.setTrackSectionUsed(ETrackSection.I, true, "ICE");
+//        guiHandler.setTrackSectionUsed(ETrackSection.C, true, "Güterzug A");
+//        guiHandler.setTrackSectionUsed(ETrackSection.G, true, "Güterzug B");
 
-        guiHandler.setSwitchDirection(ETrackSwitch.ONE, ETrackSection.G);
-        guiHandler.setSwitchDirection(ETrackSwitch.TWO, ETrackSection.G);
-        guiHandler.setSwitchDirection(ETrackSwitch.THREE, ETrackSection.D);
-        guiHandler.setSwitchDirection(ETrackSwitch.FOUR, ETrackSection.D);
-        guiHandler.setSwitchDirection(ETrackSwitch.FIVE, ETrackSection.I);
-        guiHandler.setSwitchDirection(ETrackSwitch.SIX, ETrackSection.I);
+//        guiHandler.setSwitchDirection(ETrackSwitch.ONE, ETrackSection.G);
+//        guiHandler.setSwitchDirection(ETrackSwitch.TWO, ETrackSection.G);
+//        guiHandler.setSwitchDirection(ETrackSwitch.THREE, ETrackSection.D);
+//        guiHandler.setSwitchDirection(ETrackSwitch.FOUR, ETrackSection.D);
+//        guiHandler.setSwitchDirection(ETrackSwitch.FIVE, ETrackSection.I);
+//        guiHandler.setSwitchDirection(ETrackSwitch.SIX, ETrackSection.I);
 
         //endregion GUI
 
@@ -63,42 +63,47 @@ public class Main {
                 TrackSection.get(ETrackSection.B),
                 TrackSection.get(ETrackSection.A),
                 TrackSection.get(ETrackSection.G)
-        ).switchToSection(TrackSection.get(ETrackSection.G));
+        );
         new TrackSwitch(ETrackSwitch.TWO,
                 TrackSection.get(ETrackSection.B),
                 TrackSection.get(ETrackSection.G),
                 TrackSection.get(ETrackSection.C)
-        ).switchToSection(TrackSection.get(ETrackSection.C));
+        );
         new TrackSwitch(ETrackSwitch.THREE,
                 TrackSection.get(ETrackSection.C),
                 TrackSection.get(ETrackSection.H),
                 TrackSection.get(ETrackSection.D)
-        ).switchToSection(TrackSection.get(ETrackSection.D));
+        );
         new TrackSwitch(ETrackSwitch.FOUR,
                 TrackSection.get(ETrackSection.E),
                 TrackSection.get(ETrackSection.D),
                 TrackSection.get(ETrackSection.H)
-        ).switchToSection(TrackSection.get(ETrackSection.H));
+        );
         new TrackSwitch(ETrackSwitch.FIVE,
                 TrackSection.get(ETrackSection.E),
                 TrackSection.get(ETrackSection.I),
                 TrackSection.get(ETrackSection.F)
-        ).switchToSection(TrackSection.get(ETrackSection.F));
+        );
         new TrackSwitch(ETrackSwitch.SIX,
                 TrackSection.get(ETrackSection.A),
                 TrackSection.get(ETrackSection.F),
                 TrackSection.get(ETrackSection.I)
-        ).switchToSection(TrackSection.get(ETrackSection.I));
+        );
         //endregion INIT Track System
 
+        MqttClient.getInstance().initializeBus();
+
         //region INIT Trains
-        new Train("ICE", 3, 12, Train.TrainDirection.CLOCKWISE);
-        TrackSection.get(ETrackSection.A).block(Train.get("ICE"));
-        new Train("Güterzug grün", 2, 8, Train.TrainDirection.CLOCKWISE);
-        TrackSection.get(ETrackSection.C).block(Train.get("Güterzug grün"));
-        new Train("Güterzug rot", 1, 6, Train.TrainDirection.COUNTERCLOCKWISE);
-        TrackSection.get(ETrackSection.G).block(Train.get("Güterzug rot"));
+        Train ice = new Train("ICE", 1, 3, 28, Train.TrainDirection.COUNTERCLOCKWISE);
+        TrackSection.get(ETrackSection.A).block(ice);
+        new TrackSectionEnterRequest(ice, TrackSection.get(ETrackSection.A), TrackSection.get(ETrackSection.B));
+        Train cargo = new Train("BR110", 3, 2, 8, Train.TrainDirection.COUNTERCLOCKWISE);
+        TrackSection.get(ETrackSection.D).block(cargo);
+        new TrackSectionEnterRequest(cargo, TrackSection.get(ETrackSection.D), TrackSection.get(ETrackSection.E));
+        //new Train("Güterzug rot", 1, 6, Train.TrainDirection.COUNTERCLOCKWISE);
+        //TrackSection.get(ETrackSection.G).block(Train.get("Güterzug rot"));
         //endregion INIT Trains
+        //  "BR215" ID=4 // "BR142" ID=5 | 28   // "ICE alt" ID=2
 
         //region GUI Data Faker
         try {
@@ -106,8 +111,6 @@ public class Main {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        MqttClient.getInstance();
 
 //        while(true) {
 //            try {
