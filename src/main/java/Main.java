@@ -113,29 +113,29 @@ public class Main {
 
         MqttClient.getInstance();
 
-        while(true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            guiHandler.setSwitchDirection(ETrackSwitch.FIVE, ETrackSection.F);
-            guiHandler.setSwitchDirection(ETrackSwitch.SIX, ETrackSection.F);
-            guiHandler.setTrackSectionUsed(ETrackSection.G, true, "Güterzug B");
-            guiHandler.setTrackSectionUsed(ETrackSection.B, false);
-
-            try {
-                Thread.sleep(4000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            guiHandler.setSwitchDirection(ETrackSwitch.FIVE, ETrackSection.I);
-            guiHandler.setSwitchDirection(ETrackSwitch.SIX, ETrackSection.I);
-            guiHandler.setTrackSectionUsed(ETrackSection.B, true, "Güterzug B");
-            guiHandler.setTrackSectionUsed(ETrackSection.G, false);
-        }
+//        while(true) {
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            guiHandler.setSwitchDirection(ETrackSwitch.FIVE, ETrackSection.F);
+//            guiHandler.setSwitchDirection(ETrackSwitch.SIX, ETrackSection.F);
+//            guiHandler.setTrackSectionUsed(ETrackSection.G, true, "Güterzug B");
+//            guiHandler.setTrackSectionUsed(ETrackSection.B, false);
+//
+//            try {
+//                Thread.sleep(4000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            guiHandler.setSwitchDirection(ETrackSwitch.FIVE, ETrackSection.I);
+//            guiHandler.setSwitchDirection(ETrackSwitch.SIX, ETrackSection.I);
+//            guiHandler.setTrackSectionUsed(ETrackSection.B, true, "Güterzug B");
+//            guiHandler.setTrackSectionUsed(ETrackSection.G, false);
+//        }
         //endregion GUI Data Faker
     }
 }

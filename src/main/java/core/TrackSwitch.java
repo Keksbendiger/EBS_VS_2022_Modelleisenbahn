@@ -19,6 +19,20 @@ public class TrackSwitch {
     public static TrackSwitch get(ETrackSwitch identifier) {
         return switches.get(identifier);
     }
+    public static TrackSwitch get(ETrackSection from, ETrackSection to) {
+        for (Map.Entry<ETrackSwitch, TrackSwitch> entry : switches.entrySet()) {
+            if(entry.getValue().ingoing.getIdentifier() == from) {
+                if(entry.getValue().outgoing_L.getIdentifier() == to || entry.getValue().outgoing_R.getIdentifier() == to) {
+                    return entry.getValue();
+                }
+            } else if(entry.getValue().ingoing.getIdentifier() == to) {
+                if(entry.getValue().outgoing_L.getIdentifier() == from || entry.getValue().outgoing_R.getIdentifier() == from) {
+                    return entry.getValue();
+                }
+            }
+        }
+        return null;
+    }
 
     private ETrackSwitch identifier;
     private TrackSection ingoing;
