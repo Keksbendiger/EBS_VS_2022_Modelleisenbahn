@@ -1,0 +1,56 @@
+Dankesworte an Herr Starke, Bischoff, Gürtzig für Bereitstellung HW und Hilfe bei Planung der E-Technik
+
+Einleitung          // Modell -> Notwendigkeit VS und Notwendigkeit EBS
+    -- daraus herleiten Aufgabenstellung
+
+Grundlagen
+    -- MQTT
+    -- RTOS
+    -- Ein System verteilen
+
+Anforderungen
+    -- Schienenplan
+    -- konkrete Beschreibung des Paradigmas (Weichen, Loks, Fahrtrichtungen, Prioritäten, ...)
+    -- Zeit
+
+Konzept
+    -- physisch > Simulation, um alle realen Effekte abzudecken (Kollision, Bremsweg, tatsächliche Systemschnittstellen, ...)
+    -- Architektur
+        -- Master/Slave => Leitsystem
+        -- Slaves EBS zur Garantie von Deadlines bei kritischen Schaltbefehlen und Garantie zeitlicher Konstanz bei Sensorabtastung
+        -- HW / SW Komponenten (Diagramme)
+            -- Schienentechnik, AC Leitsystem, Arduino/Motorshield
+            -- Lichtschranke, IR, Gesamtschaltbild / Parallelität, Achszählung, Frequenzgeber Arduino #quartz, Frequenzfilter, Flankenerkennung
+            -- Weichencontroller, Transistorschaltung 18V, Schaltbild
+
+            -- Bussystem via Schienen DCC++
+            -- MQTT [Broker] als Datenaustauschprotokoll zwischen allen beteiligten Systemen
+            -- Java für Leitstellenimplementierung
+            -- GUI Ausgabe Java
+            -- ESP RTOS
+            -- Arduino Motorshield - RTOS nicht notwendig, da nur ein Task stattfindet (Abhören des Befehlskanals)
+            -- RPi - RTOS nicht notwendig, da Taktrate im Verhältnis zu anderen Komponenten sehr hoch und im 'idle' auch nur 'Abhörprozess' in Schleife,
+                unterbrechungsfreie Bearbeitung von Eingangsdaten gewünscht, Multi-Thread als Erweiterung möglich
+
+        -- Schnittstellenbeschreibung
+
+Umsetzung
+    -- RPi als WiFi AP
+    -- SerialMQTT für Motorshield -> damit Arduino WLAN kann
+    -- physisches Verbinden der Komponenten, Löten, Kabel
+    -- Weichen + Sensoren auf denselben ESPs
+    -- verwendete Technik zur Qualitätssicherung / Funktionstests: Oszi, Labornetzteil, Lichtschrankentests, Multimeter, Debugging, GUI
+        -- Nutzung bewährter Hardware (ESP8266, Arduino, Raspberry Pi)
+        -- Pieper zur Kalibrierung der Lichtschranken
+    -- konkrete verwendete Bibliotheken / Implementierungen || Pseudocode, Structurizer, PAPs whatever
+        -- esp-mqtt, esp-rtos-sdk, vTaskSuspend vs vTaskDelay, RTOS Zeichnung von Tasks, Abhängigkeiten von Tasks, eingehen auf Scheduler
+
+    -- was alles auf RPi aufgesetzt ist
+    -- Problematik mit dem A4 PIN bei ESP
+
+Diskussion
+    -- ESP8266_RTOS SDK vs Arduiono_FreeRtos
+
+
+
+Fazit / Lessons Learned
