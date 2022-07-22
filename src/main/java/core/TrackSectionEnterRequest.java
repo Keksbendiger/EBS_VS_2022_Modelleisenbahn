@@ -1,6 +1,7 @@
 package core;
 
 import mqtt.MqttClient;
+import util.Logger;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,26 +18,24 @@ public class TrackSectionEnterRequest {
 
     public static void advanceRequest(TrackSectionEnterRequest request, boolean isIngoing, int count) {
         if (count != request.train.getNumLength()) {
-            System.err.println("Wrong Axis Count on " + request.train.getIdentifier() + ". Expected: " + request.train.getNumLength() + " | Counted: " + count);
+            Logger.err("Wrong Axis Count on " + request.train + ". Expected: " + request.train.getNumLength() + " | Counted: " + count);
             MqttClient.getInstance().emergencyStopAllTrains();
             return;
         }
+        Logger.log("Advance Request: " + request.train + " going to " + request.entering + " with state: " + request.state.toString());
         switch (request.state) {
             case PERMITTED:
                 // Train was allowed to move - now it should first have triggered an outgoing sensor
-                if (isIngoing) // ERROR - wrong sensor order
-                    System.err.println("Train (" + request.train.getIdentifier() + ") movement was permitted, but sensors were activated in the wrong order");
                 // in practice it has left the 'leaving' track - but we consider it moving onto the 'entering' track
-                if (request.entering.isBlocked()) {
-                    System.err.println("Train " + request.train.getIdentifier() + " tried to move to a blocked section");
+                if (request.entering.isBlocked() && request.entering.getTrain().getTrainId() != request.train.getTrainId()) {
+                    Logger.err("Train " + request.train + " tried to move to blocked section " + request.entering);
+                    MqttClient.getInstance().emergencyStopAllTrains();
+                    return;
                 }
-                request.entering.block(request.train);
                 request.state = EEnterRequestState.LEFT_OLD;
                 break;
             case LEFT_OLD:
                 // Train had already triggered the leaving sensor and should now have triggered the entering one
-                if (!isIngoing) // ERROR - wrong sensor order
-                    System.err.println("Train " + request.train.getIdentifier() + " tried to move to a blocked section");
                 // we consider it having fully left the old track now
                 request.leaving.free();
                 // we can now check if there are any requests that want to use the section we just freed
@@ -51,23 +50,33 @@ public class TrackSectionEnterRequest {
                 requests.remove(request);
                 new TrackSectionEnterRequest(request.train, request.entering, nextTarget);
                 // check if nextTarget track is free
-                if (nextTarget.isBlocked()) {
+                if (nextTarget.isBlocked() && nextTarget.getTrain().getTrainId() != request.train.getTrainId()) {
                     request.train.block();
                 }
                 break;
             default:
-                System.err.println("Train moving without permission: " + request.train.getIdentifier());
+                Logger.err("Train moving without permission: " + request.train);
                 // this should not be triggered in any other case
         }
     }
 
     public static void checkRequestPermissions(TrackSection freedSection) {
+        // TODO maybe also check requests for alternatives
         if (freedSection.isBlocked()) return;
+        TrackSectionEnterRequest validRequest = null;
         for (TrackSectionEnterRequest request : requests) {
             if (request.entering == freedSection && !request.isPermitted()) {
-                request.permit();
-                return;
+                if(validRequest == null) {
+                    validRequest = request;
+                } else {
+                    if(request.train.getPriority() > validRequest.train.getPriority()) {
+                        validRequest = request;
+                    }
+                }
             }
+        }
+        if(validRequest != null) {
+            validRequest.permit();
         }
     }
 
@@ -88,6 +97,7 @@ public class TrackSectionEnterRequest {
         this.state = EEnterRequestState.WAITING;
 
         requests.add(this);
+        Logger.log("New Request [" + train + "] from (" + leaving + ") to (" + entering + ")");
         checkRequestPermissions(entering);
     }
 
@@ -96,16 +106,33 @@ public class TrackSectionEnterRequest {
     }
 
     public void permit() {
-        if (this.entering.getIdentifier() == ETrackSection.B || this.entering.getIdentifier() == ETrackSection.G) {
+        if (this.entering.getIdentifier() == ETrackSection.B || this.entering.getIdentifier() == ETrackSection.G
+        || this.leaving.getIdentifier() == ETrackSection.B /*DIRTY FIX MISSING SENSOR TODO REMOVE*/|| this.entering.getIdentifier() == ETrackSection.A || this.leaving.getIdentifier() == ETrackSection.A /*TODO REMOVE*/) {
             this.state = EEnterRequestState.LEFT_OLD;
         } else {
             this.state = EEnterRequestState.PERMITTED;
         }
         TrackSwitch ts = TrackSwitch.get(this.leaving.getIdentifier(), this.entering.getIdentifier());
         if (ts != null) {
-            ts.switchToSection(this.entering, this.leaving);
-            System.out.println("Switching " + ts.getIdentifier().toString() + " to " + this.entering.getIdentifier().toString() + " / " + this.leaving.getIdentifier().toString());
+            // always switch ONE and TWO together
+            if (ts.getIdentifier() == ETrackSwitch.ONE || ts.getIdentifier() == ETrackSwitch.TWO) {
+                if ((entering.getIdentifier() == ETrackSection.B || entering.getIdentifier() == ETrackSection.G)
+                        && (leaving.getIdentifier() == ETrackSection.B || leaving.getIdentifier() == ETrackSection.G)) {
+                    TrackSwitch.get(ETrackSwitch.ONE).switchToSection(TrackSection.get(ETrackSection.G), TrackSection.get(ETrackSection.B));
+                    TrackSwitch.get(ETrackSwitch.TWO).switchToSection(TrackSection.get(ETrackSection.G), TrackSection.get(ETrackSection.B));
+                    Logger.log("Switching ONE and TWO to G");
+                } else {
+                    TrackSwitch.get(ETrackSwitch.ONE).switchToSection(TrackSection.get(ETrackSection.A), TrackSection.get(ETrackSection.B));
+                    TrackSwitch.get(ETrackSwitch.TWO).switchToSection(TrackSection.get(ETrackSection.C), TrackSection.get(ETrackSection.B));
+                    Logger.log("Switching ONE and TWO to A and C");
+                }
+            } else {
+                ts.switchToSection(this.entering, this.leaving);
+                Logger.log("Switching " + ts + " to " + this.entering.toString() + " / " + this.leaving);
+            }
         }
+        Logger.log("Permitted " + train + " to go to " + entering);
+        entering.block(this.train);
         this.train.unblock();
     }
 }
