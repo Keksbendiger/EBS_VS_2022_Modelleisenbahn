@@ -94,23 +94,29 @@ public class Main {
         MqttClient.getInstance().initializeBus();
 
         //region INIT Trains
-        Train ice = new Train("ICE", 1, 3, 28, Train.TrainDirection.COUNTERCLOCKWISE);
+        Train ice = new Train("ICE", 1, 3, 20, Train.TrainDirection.COUNTERCLOCKWISE);
         TrackSection.get(ETrackSection.A).block(ice);
         new TrackSectionEnterRequest(ice, TrackSection.get(ETrackSection.A), TrackSection.get(ETrackSection.B));
-        Train cargo = new Train("BR110", 3, 2, 8, Train.TrainDirection.COUNTERCLOCKWISE);
-        TrackSection.get(ETrackSection.D).block(cargo);
-        new TrackSectionEnterRequest(cargo, TrackSection.get(ETrackSection.D), TrackSection.get(ETrackSection.E));
+
         //new Train("Güterzug rot", 1, 6, Train.TrainDirection.COUNTERCLOCKWISE);
         //TrackSection.get(ETrackSection.G).block(Train.get("Güterzug rot"));
         //endregion INIT Trains
         //  "BR215" ID=4 // "BR142" ID=5 | 28   // "ICE alt" ID=2
-
-        //region GUI Data Faker
         try {
-            Thread.sleep(3000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        Train cargo = new Train("BR110", 3, 2, 12, Train.TrainDirection.COUNTERCLOCKWISE);
+        TrackSection.get(ETrackSection.D).block(cargo);
+        new TrackSectionEnterRequest(cargo, TrackSection.get(ETrackSection.D), TrackSection.get(ETrackSection.E));
+
+        //Train br142 = new Train("BR142", 5, 2, 14, Train.TrainDirection.COUNTERCLOCKWISE);
+        //TrackSection.get(ETrackSection.D).block(br142);
+        //new TrackSectionEnterRequest(br142, TrackSection.get(ETrackSection.D), TrackSection.get(ETrackSection.E));
+        //region GUI Data Faker
+
 
 //        while(true) {
 //            try {

@@ -1,6 +1,7 @@
 package core;
 
 import mqtt.MqttClient;
+import util.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,7 @@ public class Train {
 
     public static Train get(String identifier) {
         Train train = trains.get(identifier);
-        if(train == null) System.err.println("Train with name " + identifier + " not found.");
+        if(train == null) Logger.err("Train with name " + identifier + " not found.");
         return train;
     }
 
@@ -60,7 +61,7 @@ public class Train {
         }
 
         this.state = newState;
-        System.out.println("Train " + identifier + " changed state to " + newState.toString());
+        Logger.log("Train " + identifier + " changed state to " + newState);
         return true;
     }
 
@@ -78,5 +79,14 @@ public class Train {
 
     public ETrainState getState() {
         return state;
+    }
+
+    public int getTrainId() {
+        return trainId;
+    }
+
+    @Override
+    public String toString() {
+        return identifier;
     }
 }

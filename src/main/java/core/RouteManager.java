@@ -1,6 +1,6 @@
 package core;
 
-import java.util.Map;
+import util.Logger;
 
 //--------------------------------------------------//
 // author:   Keksbendiger <keksbendiger@gmail.com>
@@ -40,7 +40,7 @@ public class RouteManager {
         if(old == ETrackSection.C && current == ETrackSection.B) return ETrackSection.A;
         if(old == ETrackSection.B && current == ETrackSection.A) return ETrackSection.F;
 
-        System.err.println("Tried to find next target for " + old.toString() + " -> " + current.toString() + " but none is defined");
+        Logger.err("Tried to find next target for " + old.toString() + " -> " + current.toString() + " but none is defined");
         return null;
     }
 
@@ -65,9 +65,11 @@ public class RouteManager {
         if(TrackSection.get(nextTarget).isBlocked()) {
             alternative = findAlternative(nextTarget);
             if(!TrackSection.get(alternative).isBlocked()) {
+                Logger.log("Next Target: " + old.toString() + " -> " + current.toString() + " -> " + nextTarget.toString() + " |-> " + alternative.toString());
                 return alternative;
             }
         }
+        Logger.log("Next Target: " + old.toString() + " -> " + current.toString() + " -> " + nextTarget.toString() + (TrackSection.get(nextTarget).isBlocked()? " (blocked)": " (free)"));
         return nextTarget;
     }
 }

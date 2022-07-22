@@ -1,5 +1,7 @@
 package core;
 
+import util.Logger;
+
 //--------------------------------------------------//
 // author:   Keksbendiger <keksbendiger@gmail.com>
 // project:  EBS_VS_2022_Modelleisenbahn
@@ -371,14 +373,14 @@ public class Controller {
         }
         if(conflictingRequestsCounter == 0) {
             // THROW ERROR - TRAIN SHOULD NOT MOVE WHEN THERE IS NO __VALID__ REQUEST
-            System.err.println("No valid request found: Sensor#" + sensorId);
+            Logger.err("No valid request found: Sensor#" + sensorId);
         } else if(conflictingRequestsCounter == 1) {
             // everything works as it should
             TrackSectionEnterRequest.advanceRequest(validRequest, isIngoing, count);
 
         } else {
             // THROW ERROR - THERE SHOULD NOT BE MULTIPLE __VALID__ REQUESTS FOR THE SAME TRACK SWITCH
-            System.err.println("Multiple valid requests: Sensor#" + sensorId);
+            Logger.err("Multiple valid requests: Sensor#" + sensorId);
         }
     }
 

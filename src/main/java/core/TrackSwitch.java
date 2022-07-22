@@ -2,6 +2,7 @@ package core;
 
 import gui.GuiHandler;
 import mqtt.MqttClient;
+import util.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class TrackSwitch {
                 }
             }
         }
-        System.err.println("No TrackSwitch found: from " + from.toString() + " to " + to.toString());
+        Logger.err("No TrackSwitch found: from " + from.toString() + " to " + to.toString());
         return null;
     }
 
@@ -62,7 +63,6 @@ public class TrackSwitch {
     }
 
     public void switchToSection(TrackSection sectionTo, TrackSection sectionFrom) {
-        // TODO bei gleis B beide Weichen zusammen schalten
         if(isTraversing) return;
         if(sectionTo == outgoing_L || sectionFrom == outgoing_L) {
             if(!directionIsL) {
@@ -80,7 +80,12 @@ public class TrackSwitch {
         return identifier;
     }
 
-//region other methods
+    @Override
+    public String toString() {
+        return identifier.name();
+    }
+
+    //region other methods
 
 //endregion
 }

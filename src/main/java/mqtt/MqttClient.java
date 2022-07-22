@@ -4,6 +4,7 @@ import core.Controller;
 import core.ETrackSwitch;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import util.Logger;
 
 import java.nio.charset.StandardCharsets;
 
@@ -87,7 +88,7 @@ public class MqttClient
                 public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                     int sensorId = Integer.parseInt(topic.split("/")[1]);
                     String msg = new String(mqttMessage.getPayload());
-                    System.out.println("Sensor #" + sensorId + ": " + msg);
+                    Logger.mqtt("Sensor #" + sensorId + ": " + msg);
 
                     int msgParsed = Integer.parseInt(msg);
 
@@ -105,7 +106,7 @@ public class MqttClient
             for (int i = 1; i <= 16; i++) {
                 String topic = "sensor/" + i;
                 client.subscribe(topic, 2);
-                System.out.println("MQTT Client subscribing to [" + topic + "]");
+                Logger.mqtt("MQTT Client subscribing to [" + topic + "]");
             }
         }
         catch(MqttException e)
@@ -124,11 +125,11 @@ public class MqttClient
         {
             // TODO permanent QoS or depending on what command is being sent?
             client.publish(topic, payload, 2, false);
-            System.out.println("Published " + new String(payload) + " on " + topic);
+            Logger.mqtt("Published " + new String(payload) + " on " + topic);
         }
         catch(MqttException e)
         {
-            System.err.println("Error while publishing on topic '" + topic + "' with payload:\n" + new String(payload));
+            Logger.err("Error while publishing on topic '" + topic + "' with payload:\n" + new String(payload));
             e.printStackTrace();
         }
     }

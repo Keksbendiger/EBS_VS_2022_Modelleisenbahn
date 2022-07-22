@@ -37,7 +37,7 @@ public class TrackSection {
         if(!this.isBlocked) {
             this.isBlocked = true;
             this.train = train;
-            GuiHandler.getInstance().setTrackSectionUsed(identifier, true, this.train.getIdentifier());
+            GuiHandler.getInstance().setTrackSectionUsed(identifier, true, this.train.toString());
         }
     }
 
@@ -47,5 +47,14 @@ public class TrackSection {
 
     public ETrackSection getIdentifier() {
         return identifier;
+    }
+
+    public Train getTrain() {
+        return train;
+    }
+
+    @Override
+    public String toString() {
+        return identifier.name();
     }
 }
