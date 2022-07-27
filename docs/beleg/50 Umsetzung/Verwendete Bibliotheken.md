@@ -1,12 +1,13 @@
-# DCC++ BaseStation
+## Verwendete Bibliotheken <!--AP-->
+### DCC++ BaseStation
 
 (https://github.com/DccPlusPlus/BaseStation)
 
-# EspMQTTClient
+### EspMQTTClient
 
 (https://github.com/plapointe6/EspMQTTClient)
 
-# Paho MQTTv3 Library 
+### Paho MQTTv3 Library 
 
 Verwendung Version 3 da MQTT-Broker nur Protokollversion 3.1 und drunter unterstützt
 
@@ -25,11 +26,11 @@ Maven (pom.xml)
     </dependency>
 ```
 
-# Arduino AVR
+### Arduino AVR
 
 (https://github.com/arduino/ArduinoCore-avr)
 
-# Tabelle mit Referenzen
+### Tabelle mit Referenzen
 
 | Library             | URL                                         | Projekt                      | Programmiersprache |
 |---------------------|---------------------------------------------|------------------------------|--------------------|
