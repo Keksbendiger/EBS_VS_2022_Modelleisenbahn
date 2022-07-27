@@ -1,0 +1,4 @@
+- RPi ohne RTC und ohne NTP (weil Nutzung als AP) kritisch - großer Aufwand
+- elektronische Bauteile (vor allem, wenn billig) sollten immer mit Ersatzkapazitäten bestellt werden
+- Niclas hat schon wieder den Alexa-Skill nicht gemacht
+- 
