@@ -1,1 +1,3 @@
+
+
 vom Internet gekapselt, eigener Broker benötigt und zur Verbindung dafür eigener WiFi Access Point benötigt

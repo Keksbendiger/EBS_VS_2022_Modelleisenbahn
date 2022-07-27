@@ -6,12 +6,12 @@
 ### EspMQTTClient
 
 (https://github.com/plapointe6/EspMQTTClient)
+Diese Bibliothek kann über die Arduino IDE einfach ausgewählt und zum Projekt hinzugefügt werden.
 
 ### Paho MQTTv3 Library 
 
-Verwendung Version 3 da MQTT-Broker nur Protokollversion 3.1 und drunter unterstützt
-
-Maven (pom.xml)
+Die Protokollversion 5 von MQTT wird vom eingesetzten Broker (mosquitto) nicht unterstützt, daher wird auf allen beteiligten Systemen die Version 3 beziehungsweise 3.1 eingesetzt.
+Zur Verwendung müssen in Maven (pom.xml) folgende Ergänzungen vorgenommen werden:
 
 ```
     <repository>
