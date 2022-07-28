@@ -1,4 +1,6 @@
 - RPi ohne RTC und ohne NTP (weil Nutzung als AP) kritisch - großer Aufwand
-- elektronische Bauteile (vor allem, wenn billig) sollten immer mit Ersatzkapazitäten bestellt werden
+- elektronische Bauteile (vor allem, wenn billig) sollten immer mit Ersatzkapazitäten bestellt werden <!--NJ-->
 - Niclas hat schon wieder den Alexa-Skill nicht gemacht
+- Jumper Wire durch richtige Kable ersetzen (Mehr Aufwand durch Löten und Isolieren) <!--NJ-->
+- Transistoren nur mit Gleichspannung betreiben und nicht mit Wechselstrom <!--NJ-->
 - 
