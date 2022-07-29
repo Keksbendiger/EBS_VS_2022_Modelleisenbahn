@@ -12,13 +12,13 @@
 * GUI
 ### Gleis-Bussystem
 ### Achszähler
-### Weichenschaltung <!--NJ-->
-Die Weichenschaltung bezeichnet den Aufbau, welcher die Weichen in die jeweilige vorgegebene Richtung schaltet. Über den angeschlossenen ESP8266 werden die Wichen über
-eine Transistorschaltung geschaltet.  
+### Weichenschaltung<!--NJ-->
+Die Weichenschaltung bezeichnet den Aufbau, welcher die Weichen in die jeweiligen vorgegebenen Richtungen schaltet.
+Über den angeschlossenen ESP8266 werden die Weichen über eine Transistorschaltung geschaltet.  
 
-Die Standardweichen von Roco sind nicht mit Antrieben ausgestattet, welche es somit nicht ermöglichen "out-of-the-box" direkt benutzt zu werden. Hierfür mussten
-erst Weichenantriebe beschafft und eingebaut werden. Um das Konzept von verteilten Systemen beizubehalten, soll jede Weiche über ihren eigenen ESP verfügen und 
-geschaltet werden (Dieser übernimmt gleichzeitig die Achszählung für die jeweilige Weiche). Die Weichenantriebe liegen in zwei ausführungen vor. Einmal digital oder analog.
+Die Standardweichen von Roco sind nicht mit Antrieben ausgestattet, wodurch es somit nicht möglich ist diese "out-of-the-box" direkt zu benutzen. Hierfür mussten
+erst Weichenantriebe beschafft und eingebaut werden. Um das Konzept von verteilten Systemen umzusetzen, soll jede Weiche über ihren eigenen ESP verfügen und 
+geschaltet werden (Dieser übernimmt gleichzeitig die Achszählung für die jeweilige Weiche). Die Weichenantriebe liegen in zwei ausführungen vor. Einmal digital und analog.
 Da der ESP nicht über das gleiche Bussystem wie die Schienen verfügt, musste sich für die analoge Variante entschieden werden, da diese über den ESP schaltbar ist.
 
 Jeder Antrieb verfügt über eine Spule, welche durch das Zuführen von Spannung die Richtung ändert und somit die Weiche über einen mechanischen Mechanismus stellt beziehungsweise
@@ -30,7 +30,7 @@ Hierfür wurde eine Transistorschaltung entworfen, welche eine externe Spannungs
 Wichtig bei dieser Schaltung ist, dass der Ground-Anschluss der Weiche auf das Plus des 18 Volt Netzteiles geschalten werden muss. Die zwei Kabel zum Schalten der Weiche werden
 jeweils an den Collector des Transistors geschalten. Somit "fließt" der Strom erst durch die Weiche und die Spannung liegt dann an dem jeweiligen Transistor an und "wartet" bis
 dieser die anliegende Spannung gegen Ground zieht. 
-
+ 
 ### MQTT-Broker als zentrales Datenübertragungsmedium
 ### Leitstelle <!--CH-->
 Die Leitstelle bezeichnet das zentrale Programm, welches in Abhängigkeit der eingehenden Daten Züge startet und stoppt, Weichen stellt und gegebenenfalls Fehler beziehungsweise Ausnahmezustände erkennt und darauf reagiert. Der Rechner, auf dem jenes Programm ausgeführt wird, kann ebenfalls als Leitstelle bezeichnet werden.
