@@ -4,7 +4,7 @@ ESP8266 verfügen über nicht so viele GPIO's, sie sind dennoch zuverlässig was
 Skalierbarkeit auch gegeben
 
 TODOs:
-- Anzahl beteiligte Computer
+- Anzahl beteiligte Computer ()
 - Art, Detail der Kommunikation
 - Topologie des Systems
 - (leichte Erweiterbarkeit)
