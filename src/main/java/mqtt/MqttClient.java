@@ -137,16 +137,16 @@ public class MqttClient
     // TODO Maybe move functions into abstract class or interface, there is no real need for them all to be in this file.
     public void sendTrainStart(String identifier)
     {
-        publish(START_TOPIC, identifier.getBytes(StandardCharsets.UTF_8));
+        publish(START_TOPIC, identifier);
     }
 
     public void sendTrainStop(String identifier)
     {
-        publish(STOP_TOPIC, identifier.getBytes(StandardCharsets.UTF_8));
+        publish(STOP_TOPIC, identifier);
     }
 
     public void emergencyStopAllTrains() {
-        publish(STOP_TOPIC, "*");
+        sendTrainStop("*");
     }
 
     public void sendSwitchActuator(int id, boolean toLeft) {
