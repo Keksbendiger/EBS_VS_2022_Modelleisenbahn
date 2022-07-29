@@ -29,9 +29,40 @@ Hierfür wurde eine Transistorschaltung entworfen, welche eine externe Spannungs
 
 Wichtig bei dieser Schaltung ist, dass der Ground-Anschluss der Weiche auf das Plus des 18 Volt Netzteiles geschalten werden muss. Die zwei Kabel zum Schalten der Weiche werden
 jeweils an den Collector des Transistors geschalten. Somit "fließt" der Strom erst durch die Weiche und die Spannung liegt dann an dem jeweiligen Transistor an und "wartet" bis
-dieser die anliegende Spannung gegen Ground zieht. 
+dieser die anliegende Spannung gegen Ground zieht.
 
-### MQTT-Broker als zentrales Datenübertragungsmedium
+### MQTT-Broker <!--CH-->
+In der folgenden Tabelle werden alle im Projekt genutzten MQTT-Topics aufgeführt.
+Daneben befindet sich die Zuordnung, welche Systemkomponente jeweils Sender und Empfänger der Nachricht ist.
+Würde man die grafische Oberfläche auf einen eigenen Rechner auslagern, so müsste dieser zusätzlich alle aufgeführten Topics abonnieren.
+
+| MQTT Topic | Sender           | Abonnent           | Payload        |
+|------------|------------------|--------------------|----------------|
+| sensor/1   | Weichenstation 3 | Leitstelle         | Achszählwert   |
+| sensor/2   | Weichenstation 3 | Leitstelle         | Achszählwert   |
+| sensor/3   | Weichenstation 3 | Leitstelle         | Achszählwert   |
+| sensor/4   | Weichenstation 4 | Leitstelle         | Achszählwert   |
+| sensor/5   | Weichenstation 4 | Leitstelle         | Achszählwert   |
+| sensor/6   | Weichenstation 4 | Leitstelle         | Achszählwert   |
+| sensor/7   | Weichenstation 5 | Leitstelle         | Achszählwert   |
+| sensor/8   | Weichenstation 5 | Leitstelle         | Achszählwert   |
+| sensor/9   | Weichenstation 5 | Leitstelle         | Achszählwert   |
+| sensor/10  | Weichenstation 6 | Leitstelle         | Achszählwert   |
+| sensor/11  | Weichenstation 6 | Leitstelle         | Achszählwert   |
+| sensor/12  | Weichenstation 6 | Leitstelle         | Achszählwert   |
+| sensor/13  | Weichenstation 1 | Leitstelle         | Achszählwert   |
+| sensor/14  | Weichenstation 1 | Leitstelle         | Achszählwert   |
+| sensor/15  | Weichenstation 2 | Leitstelle         | Achszählwert   |
+| sensor/16  | Weichenstation 2 | Leitstelle         | Achszählwert   |
+| actuator/1 | Leitstelle       | Weichenstation 1   | 'L' oder 'R'   |
+| actuator/2 | Leitstelle       | Weichenstation 2   | 'L' oder 'R'   |
+| actuator/3 | Leitstelle       | Weichenstation 3   | 'L' oder 'R'   |
+| actuator/4 | Leitstelle       | Weichenstation 4   | 'L' oder 'R'   |
+| actuator/5 | Leitstelle       | Weichenstation 5   | 'L' oder 'R'   |
+| actuator/6 | Leitstelle       | Weichenstation 6   | 'L' oder 'R'   |
+| cmd/start  | Leitstelle       | Gleisbuscontroller | ID der Lok / * |
+| cmd/stop   | Leitstelle       | Gleisbuscontroller | ID der Lok / * |
+
 ### Leitstelle <!--CH-->
 Die Leitstelle bezeichnet das zentrale Programm, welches in Abhängigkeit der eingehenden Daten Züge startet und stoppt, Weichen stellt und gegebenenfalls Fehler beziehungsweise Ausnahmezustände erkennt und darauf reagiert. Der Rechner, auf dem jenes Programm ausgeführt wird, kann ebenfalls als Leitstelle bezeichnet werden.
 
