@@ -1,9 +1,18 @@
 ### Aufbau Modelleisenbahn <!--NJ-->
-Als der Gleisplan stand, ging es darum die Schienen zu verlegen und die Grundlagen für die spätere Verkablung zu legen.
+Als der Gleisplan stand, ging es darum, die Schienen zu verlegen und die Weichen zu verkabeln. Jede Weiche besitzt 
+drei IR-Receiver und drei IR-Dioden sowie die notwendigen Kabel und Widerstände. 
 
-### Aufbau Lichtschranken / Achszähler <!--AP-->
+#### Befestigung der Dioden und Receiver an den Gleisen
+Die uns zur Verfügung stehenden Gleise bestehen aus dem Gleis selbst und einer Gleisbettung aus Gummi.
+Durch die dünnen anschlüsse ("Beine") der Bauteile war die Grundidee, die Dioden und Receiver durch das Gummi am Rand der 
+Gleise zu stoßen und zu befestigen. Nach dem Durchstoßen des Gummis haben wir die Beinchen umgebogen und mit den 
+Anschlusskablen verlötet. Wichtig hierbei war es zu beachten, dass die Kabel zu den IR-Dioden immer parallel verschaltet
+werden müssen, sowie dass vor jede LED ein Widerstand angebracht werden musste.eq
+
+### Einstellung der Lichtschranken / Achszähler <!--AP-->
 Zum Inbetriebnahme der Strecke und Software war es notwendig die Sensorik aufeinander einzustellen.
-Hierbei wurden unzählige Male die LEDs gebogen und verschoben um ein perfektes Sichtverhältnis von IR Diode und IR Receiver zu erzielen.
+Hierbei wurden unzählige Male die LEDs gebogen und verschoben um ein perfektes Sichtverhältnis von IR Diode und
+IR Receiver zu erzielen.
 
 ### Testen der Achszähler <!--AP-->
 Beim Testen der Achszähler ist uns aufgefallen, dass einige Züge bei den Lichtschranken entgleist wurden. 
@@ -26,5 +35,3 @@ Hier trat zum ersten Mal das Problem auf: Es sollte möglich sein ohne ständige
 Da das Testen mithilfe eines seriellen Terminals nicht optimal war, kam die Idee des Programmierens eines akustischen Achszählers. 
 Beim Detektieren einer Achse einen Ton über einen Beeper (Mini Lautsprecher) ausgegeben. Dieser Prozess hat uns beim Kalibrieren der Sensorik unheimlich geholfen.
 Wir nun nicht mehr mit unseren Augen zwischen Bildschirm und unterhalb der Eisenbahn hin und her schauen mussten.
-
-### Arduino und Motorshield <!--AP-->
