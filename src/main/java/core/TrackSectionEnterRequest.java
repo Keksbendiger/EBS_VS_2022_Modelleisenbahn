@@ -9,6 +9,7 @@ import java.util.List;
 
 public class TrackSectionEnterRequest {
     private static List<TrackSectionEnterRequest> requests = new ArrayList<>();
+    public static boolean shutdown = false;
 
     private Train train;
     private TrackSection leaving;
@@ -17,6 +18,8 @@ public class TrackSectionEnterRequest {
     private EEnterRequestState state;
 
     public static void advanceRequest(TrackSectionEnterRequest request, boolean isIngoing, int count) {
+        if(shutdown) return;
+
         if (count != request.train.getNumLength()) {
             Logger.err("Wrong Axis Count on " + request.train + ". Expected: " + request.train.getNumLength() + " | Counted: " + count);
             MqttClient.getInstance().emergencyStopAllTrains();

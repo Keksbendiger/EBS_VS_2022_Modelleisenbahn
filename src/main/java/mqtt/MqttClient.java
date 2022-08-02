@@ -2,11 +2,14 @@ package mqtt;
 
 import core.Controller;
 import core.ETrackSwitch;
+import core.TrackSectionEnterRequest;
+import core.Train;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import util.Logger;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Random;
 
 public class MqttClient
@@ -152,6 +155,10 @@ public class MqttClient
     }
 
     public void emergencyStopAllTrains() {
+        TrackSectionEnterRequest.shutdown = true;
+        for (Map.Entry<String, Train> entry : Train.trains.entrySet()) {
+            entry.getValue().block();
+        }
         sendTrainStop("*");
     }
 
