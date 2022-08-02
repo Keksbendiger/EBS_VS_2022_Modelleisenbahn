@@ -98,23 +98,16 @@ public class Main {
         TrackSection.get(ETrackSection.A).block(ice);
         new TrackSectionEnterRequest(ice, TrackSection.get(ETrackSection.A), TrackSection.get(ETrackSection.B));
 
-        //new Train("Güterzug rot", 1, 6, Train.TrainDirection.COUNTERCLOCKWISE);
-        //TrackSection.get(ETrackSection.G).block(Train.get("Güterzug rot"));
         //endregion INIT Trains
         //  "BR215" ID=4 // "BR142" ID=5 | 28   // "ICE alt" ID=2
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         Train cargo = new Train("BR110", 3, 2, 12, Train.TrainDirection.COUNTERCLOCKWISE);
         TrackSection.get(ETrackSection.D).block(cargo);
         new TrackSectionEnterRequest(cargo, TrackSection.get(ETrackSection.D), TrackSection.get(ETrackSection.E));
 
-        //Train br142 = new Train("BR142", 5, 2, 14, Train.TrainDirection.COUNTERCLOCKWISE);
-        //TrackSection.get(ETrackSection.D).block(br142);
-        //new TrackSectionEnterRequest(br142, TrackSection.get(ETrackSection.D), TrackSection.get(ETrackSection.E));
+        Train br142 = new Train("BR142", 5, 1, 14, Train.TrainDirection.CLOCKWISE);
+        TrackSection.get(ETrackSection.G).block(br142);
+        new TrackSectionEnterRequest(br142, TrackSection.get(ETrackSection.G), TrackSection.get(ETrackSection.B));
         //region GUI Data Faker
 
 
