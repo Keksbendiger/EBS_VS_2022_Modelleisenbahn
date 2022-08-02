@@ -7,6 +7,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import util.Logger;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 public class MqttClient
 {
@@ -137,6 +138,11 @@ public class MqttClient
     // TODO Maybe move functions into abstract class or interface, there is no real need for them all to be in this file.
     public void sendTrainStart(String identifier)
     {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         publish(START_TOPIC, identifier);
     }
 
