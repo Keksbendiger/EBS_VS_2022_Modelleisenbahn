@@ -4,11 +4,13 @@ import mqtt.MqttClient;
 import util.Logger;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TrackSectionEnterRequest {
-    private static List<TrackSectionEnterRequest> requests = new ArrayList<>();
+    private static List<TrackSectionEnterRequest> requests = new CopyOnWriteArrayList<>();
     public static boolean shutdown = false;
 
     private Train train;
@@ -47,15 +49,34 @@ public class TrackSectionEnterRequest {
                 // maybe completely remove that state
                 request.state = EEnterRequestState.ENTERED_NEW;
 
-                // we can close the request now
-                // but we also need to create the follow request
-                TrackSection nextTarget = TrackSection.get(RouteManager.getInstance().nextTargetOrAlternative(request.leaving.getIdentifier(), request.entering.getIdentifier()));
-                requests.remove(request);
-                new TrackSectionEnterRequest(request.train, request.entering, nextTarget);
-                // check if nextTarget track is free
-                if (nextTarget.isBlocked() && nextTarget.getTrain().getTrainId() != request.train.getTrainId()) {
-                    request.train.block();
+                // IF THIS REQUEST IS ABOUT BR142 WHICH IS REALLY SLOW AND ONLY MOVES BETWEEN B AND G WE DELAY THE RESERVATION
+                if(request.train.getTrainId() == 5 && request.entering.getIdentifier() == ETrackSection.G) {
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            // we can close the request now
+                            // but we also need to create the follow request
+                            TrackSection nextTarget = TrackSection.get(RouteManager.getInstance().nextTargetOrAlternative(request.leaving.getIdentifier(), request.entering.getIdentifier()));
+                            requests.remove(request);
+                            new TrackSectionEnterRequest(request.train, request.entering, nextTarget);
+                            // check if nextTarget track is free
+                            if (nextTarget.isBlocked() && nextTarget.getTrain().getTrainId() != request.train.getTrainId()) {
+                                request.train.block();
+                            }
+                        }
+                    }, 13500);
+                } else {
+                    // we can close the request now
+                    // but we also need to create the follow request
+                    TrackSection nextTarget = TrackSection.get(RouteManager.getInstance().nextTargetOrAlternative(request.leaving.getIdentifier(), request.entering.getIdentifier()));
+                    requests.remove(request);
+                    new TrackSectionEnterRequest(request.train, request.entering, nextTarget);
+                    // check if nextTarget track is free
+                    if (nextTarget.isBlocked() && nextTarget.getTrain().getTrainId() != request.train.getTrainId()) {
+                        request.train.block();
+                    }
                 }
+
                 break;
             default:
                 Logger.err("Train moving without permission: " + request.train);
@@ -109,12 +130,12 @@ public class TrackSectionEnterRequest {
     }
 
     public void permit() {
-        if (this.entering.getIdentifier() == ETrackSection.B || this.entering.getIdentifier() == ETrackSection.G
-        || this.leaving.getIdentifier() == ETrackSection.B /*DIRTY FIX MISSING SENSOR TODO REMOVE*/|| this.entering.getIdentifier() == ETrackSection.A || this.leaving.getIdentifier() == ETrackSection.A /*TODO REMOVE*/) {
+        //if (this.entering.getIdentifier() == ETrackSection.B || this.entering.getIdentifier() == ETrackSection.G
+        //|| this.leaving.getIdentifier() == ETrackSection.B /*DIRTY FIX MISSING SENSOR TODO REMOVE*/|| this.entering.getIdentifier() == ETrackSection.A || this.leaving.getIdentifier() == ETrackSection.A /*TODO REMOVE*/) {
             this.state = EEnterRequestState.LEFT_OLD;
-        } else {
-            this.state = EEnterRequestState.PERMITTED;
-        }
+        //} else {
+            //this.state = EEnterRequestState.PERMITTED;
+        //}
         TrackSwitch ts = TrackSwitch.get(this.leaving.getIdentifier(), this.entering.getIdentifier());
         if (ts != null) {
             // always switch ONE and TWO together
