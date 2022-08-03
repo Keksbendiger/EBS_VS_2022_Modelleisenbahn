@@ -29,6 +29,9 @@ public class RouteManager {
         if(old == ETrackSection.F && current == ETrackSection.A) return ETrackSection.B;
         if(old == ETrackSection.I && current == ETrackSection.A) return ETrackSection.B;
 
+        if(old == ETrackSection.B && current == ETrackSection.G) return ETrackSection.B;
+        if(old == ETrackSection.G && current == ETrackSection.B) return ETrackSection.G;
+
         if(old == ETrackSection.A && current == ETrackSection.F) return ETrackSection.E;
         if(old == ETrackSection.A && current == ETrackSection.I) return ETrackSection.E;
         if(old == ETrackSection.F && current == ETrackSection.E) return ETrackSection.D;
