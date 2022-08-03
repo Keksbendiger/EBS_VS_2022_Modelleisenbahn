@@ -5,6 +5,8 @@
  */
 package gui;
 
+import mqtt.MqttClient;
+
 import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -191,6 +193,17 @@ public class GUI extends javax.swing.JFrame {
 
         Label_F.setText("F");
 
+        bt_Bus = new JButton();
+        bt_ICE = new JButton();
+        bt_BR110 = new JButton();
+        bt_BR142 = new JButton();
+        bt_BR215 = new JButton();
+        new BusButton("Bus", "*", bt_Bus);
+        new BusButton("ICE", "1", bt_ICE);
+        new BusButton("BR110", "3", bt_BR110);
+        new BusButton("BR142", "5", bt_BR142);
+        new BusButton("BR215", "4", bt_BR215);
+
         // Settings for all Progress Bars
         for (Map.Entry<String, JProgressBar> entry : pbars.entrySet()) {
             entry.getValue().setStringPainted(true);
@@ -303,6 +316,17 @@ public class GUI extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                                 .addGap(146, 146, 146)
                                 .addComponent(Label_B)
+
+                                // HAND MADE
+                                .addGap(20, 20, 20)
+                                .addComponent(bt_Bus, 120, 120, 120)
+                                .addComponent(bt_ICE, 120, 120, 120)
+                                .addComponent(bt_BR110, 120, 120, 120)
+                                .addComponent(bt_BR142, 120, 120, 120)
+                                .addComponent(bt_BR215, 120, 120, 120)
+
+                                // END HAND MADE
+
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -377,7 +401,8 @@ public class GUI extends javax.swing.JFrame {
                                                                                 .addGap(186, 186, 186)
                                                                                 .addComponent(G_C_PB_top, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                                 .addGap(22, 22, 22)
-                                                                                .addComponent(Label_C)))))
+                                                                                .addComponent(Label_C)
+                                                                        ))))
                                                 .addGroup(layout.createSequentialGroup()
                                                         .addGap(44, 44, 44)
                                                         .addComponent(G_A_PB_left, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -399,6 +424,17 @@ public class GUI extends javax.swing.JFrame {
                                 .addComponent(G_B_PB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(15, 15, 15)
                                 .addComponent(Label_B)
+
+                                // HAND MADE
+                                .addGap(20, 20, 20)
+                                .addComponent(bt_Bus, 20, 20, 20)
+                                .addComponent(bt_ICE, 20, 20, 20)
+                                .addComponent(bt_BR110, 20, 20, 20)
+                                .addComponent(bt_BR142, 20, 20, 20)
+                                .addComponent(bt_BR215, 20, 20, 20)
+
+                                // END HAND MADE
+
                                 .addContainerGap(318, Short.MAX_VALUE))
         );
 
@@ -450,5 +486,10 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.ButtonGroup bg_W4;
     private javax.swing.ButtonGroup bg_W5;
     private javax.swing.ButtonGroup bg_W6;
+    private javax.swing.JButton bt_Bus;
+    private javax.swing.JButton bt_ICE;
+    private javax.swing.JButton bt_BR110;
+    private javax.swing.JButton bt_BR142;
+    private javax.swing.JButton bt_BR215;
     // End of variables declaration
 }

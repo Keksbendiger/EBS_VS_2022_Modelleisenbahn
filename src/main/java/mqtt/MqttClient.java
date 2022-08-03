@@ -4,6 +4,7 @@ import core.Controller;
 import core.ETrackSwitch;
 import core.TrackSectionEnterRequest;
 import core.Train;
+import gui.BusButton;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import util.Logger;
@@ -96,6 +97,8 @@ public class MqttClient
 
                     int msgParsed = Integer.parseInt(msg);
 
+                    if(msgParsed % 2 == 1) msgParsed--;
+                    if(msgParsed == 0) return;
                     Controller.get().receivedCount(sensorId, msgParsed);
                 }
 
@@ -147,11 +150,13 @@ public class MqttClient
             e.printStackTrace();
         }
         publish(START_TOPIC, identifier);
+        BusButton.switchButtonState(identifier, true);
     }
 
     public void sendTrainStop(String identifier)
     {
         publish(STOP_TOPIC, identifier);
+        BusButton.switchButtonState(identifier, false);
     }
 
     public void emergencyStopAllTrains() {
@@ -172,5 +177,11 @@ public class MqttClient
 
     public void initializeBus() {
         sendTrainStart("*");
+        for (Map.Entry<String, Train> entry : Train.trains.entrySet()) {
+            sendTrainStop(entry.getValue().getIdentifier());
+        }
+    }
+    public void deactivateBus() {
+        sendTrainStop("*");
     }
 }

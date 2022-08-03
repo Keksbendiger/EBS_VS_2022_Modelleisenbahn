@@ -105,7 +105,7 @@ public class Main {
         TrackSection.get(ETrackSection.D).block(cargo);
         new TrackSectionEnterRequest(cargo, TrackSection.get(ETrackSection.D), TrackSection.get(ETrackSection.E));
 
-        Train br142 = new Train("BR142", 5, 1, 14, Train.TrainDirection.CLOCKWISE);
+        Train br142 = new Train("BR142", 5, 1, 12, Train.TrainDirection.CLOCKWISE);
         TrackSection.get(ETrackSection.G).block(br142);
         new TrackSectionEnterRequest(br142, TrackSection.get(ETrackSection.G), TrackSection.get(ETrackSection.B));
         //region GUI Data Faker
