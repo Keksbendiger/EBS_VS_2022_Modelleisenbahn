@@ -11,6 +11,10 @@ public class TrackSection {
     public static TrackSection get(ETrackSection identifier) {
         return sections.get(identifier);
     }
+    public static boolean isFree(ETrackSection identifier) {
+        TrackSection section = get(identifier);
+        return !section.isBlocked();
+    }
 
     private final ETrackSection identifier;
     private final double delay;
@@ -51,6 +55,10 @@ public class TrackSection {
 
     public Train getTrain() {
         return train;
+    }
+
+    public double getDelay() {
+        return delay;
     }
 
     @Override

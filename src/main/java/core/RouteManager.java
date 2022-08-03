@@ -2,6 +2,8 @@ package core;
 
 import util.Logger;
 
+import javax.sound.midi.Track;
+
 //--------------------------------------------------//
 // author:   Keksbendiger <keksbendiger@gmail.com>
 // project:  EBS_VS_2022_Modelleisenbahn
@@ -74,5 +76,91 @@ public class RouteManager {
         }
         Logger.log("Next Target: " + old.toString() + " -> " + current.toString() + " -> " + nextTarget.toString() + (TrackSection.get(nextTarget).isBlocked()? " (blocked)": " (free)"));
         return nextTarget;
+    }
+
+    public boolean checkConstraints(ETrackSection current, ETrackSection next) {
+        switch (current) {
+
+            case A:
+                if(next == ETrackSection.B) {
+                    return (isFree(ETrackSection.C) || isFree(ETrackSection.G));
+                }
+                if(next == ETrackSection.F) {
+                    return (isFree(ETrackSection.E) || isFree(ETrackSection.I));
+                }
+                if(next == ETrackSection.I) {
+                    return (isFree(ETrackSection.E) || isFree(ETrackSection.F));
+                }
+                break;
+            case B:
+                if(next == ETrackSection.A) {
+                    return true/*(isFree(ETrackSection.F) || isFree(ETrackSection.I))*/;
+                }
+                if(next == ETrackSection.C) {
+                    return true/*(isFree(ETrackSection.D) || isFree(ETrackSection.H))*/;
+                }
+                if(next == ETrackSection.G) {
+                    return true;
+                }
+                break;
+            case C:
+                if(next == ETrackSection.B) {
+                    return (isFree(ETrackSection.A) || isFree(ETrackSection.G));
+                }
+                if(next == ETrackSection.D) {
+                    return (isFree(ETrackSection.E) || isFree(ETrackSection.H));
+                }
+                if(next == ETrackSection.H) {
+                    return (isFree(ETrackSection.D) || isFree(ETrackSection.E));
+                }
+                break;
+            case D:
+            case H:
+                if(next == ETrackSection.C) {
+                    return (isFree(ETrackSection.B) || blockingBIsGoingG()) && (isFree(ETrackSection.A));
+                }
+                if(next == ETrackSection.E) {
+                    return (isFree(ETrackSection.F) || isFree(ETrackSection.I));
+                }
+                break;
+            case E:
+                if(next == ETrackSection.D) {
+                    return (isFree(ETrackSection.C) || isFree(ETrackSection.H));
+                }
+                if(next == ETrackSection.F) {
+                    return (isFree(ETrackSection.A) || isFree(ETrackSection.I));
+                }
+                if(next == ETrackSection.H) {
+                    return (isFree(ETrackSection.C) || isFree(ETrackSection.D));
+                }
+                if(next == ETrackSection.I) {
+                    return (isFree(ETrackSection.A) || isFree(ETrackSection.F));
+                }
+                break;
+            case F:
+            case I:
+                if(next == ETrackSection.A) {
+                    return (isFree(ETrackSection.B) || blockingBIsGoingG() ) && isFree(ETrackSection.C) && (isFree(ETrackSection.D) || isFree(ETrackSection.H));
+                }
+                if(next == ETrackSection.E) {
+                    return (isFree(ETrackSection.D) || isFree(ETrackSection.H));
+                }
+                break;
+            case G:
+                if(next == ETrackSection.B) {
+                    return (isFree(ETrackSection.A) || isFree(ETrackSection.C));
+                }
+                break;
+        }
+        Logger.log("Restrictions not met: " + current + " -> " + next);
+        return false;
+    }
+
+    private boolean isFree(ETrackSection section) {
+        return TrackSection.isFree(section);
+    }
+
+    private boolean blockingBIsGoingG() {
+        return TrackSection.get(ETrackSection.B).getTrain().getTrainId() == 5;
     }
 }
