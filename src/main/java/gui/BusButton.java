@@ -36,7 +36,6 @@ public class BusButton {
         this.btn = btn;
         btn.setText(name + " anschalten");
         btn.addActionListener(actionEvent -> {
-            switchState(btn.getText().equals(name + " anschalten"));
             sendCommand(btn.getText().equals(name + " anschalten"));
         });
 

@@ -49,15 +49,15 @@ public class Main {
         //endregion GUI
 
         //region INIT Track System
-        new TrackSection(ETrackSection.A, 3);
+        new TrackSection(ETrackSection.A, 0.3);
         new TrackSection(ETrackSection.B, 0);
-        new TrackSection(ETrackSection.C, 3);
-        new TrackSection(ETrackSection.D, 1);
-        new TrackSection(ETrackSection.E, 1);
-        new TrackSection(ETrackSection.F, 1);
-        new TrackSection(ETrackSection.G, 3);
-        new TrackSection(ETrackSection.H, 1);
-        new TrackSection(ETrackSection.I, 1);
+        new TrackSection(ETrackSection.C, 0.5);
+        new TrackSection(ETrackSection.D, 0.2);
+        new TrackSection(ETrackSection.E, 0);
+        new TrackSection(ETrackSection.F, 0.2);
+        new TrackSection(ETrackSection.G, 13.5);
+        new TrackSection(ETrackSection.H, 0.2);
+        new TrackSection(ETrackSection.I, 0.2);
 
         new TrackSwitch(ETrackSwitch.ONE,
                 TrackSection.get(ETrackSection.B),
@@ -94,20 +94,24 @@ public class Main {
         MqttClient.getInstance().initializeBus();
 
         //region INIT Trains
-        Train ice = new Train("ICE", 1, 3, 20, Train.TrainDirection.COUNTERCLOCKWISE);
+        Train ice = new Train("ICE", 1, 3, 20, Train.TrainDirection.COUNTERCLOCKWISE, 1);
         TrackSection.get(ETrackSection.A).block(ice);
         new TrackSectionEnterRequest(ice, TrackSection.get(ETrackSection.A), TrackSection.get(ETrackSection.B));
 
         //endregion INIT Trains
-        //  "BR215" ID=4 // "BR142" ID=5 | 28   // "ICE alt" ID=2
+        //  "BR215" ID=4 // "BR142" ID=5 | 28   // "ICE alt" ID=10
 
-        Train cargo = new Train("BR110", 3, 2, 12, Train.TrainDirection.COUNTERCLOCKWISE);
+        Train cargo = new Train("BR110", 3, 2, 12, Train.TrainDirection.COUNTERCLOCKWISE, 8);
         TrackSection.get(ETrackSection.D).block(cargo);
         new TrackSectionEnterRequest(cargo, TrackSection.get(ETrackSection.D), TrackSection.get(ETrackSection.E));
 
-        Train br142 = new Train("BR142", 5, 1, 12, Train.TrainDirection.CLOCKWISE);
+        Train br142 = new Train("BR142", 5, 1, 12, Train.TrainDirection.CLOCKWISE, 1);
         TrackSection.get(ETrackSection.G).block(br142);
         new TrackSectionEnterRequest(br142, TrackSection.get(ETrackSection.G), TrackSection.get(ETrackSection.B));
+
+        Train br215 = new Train("BR215", 4, 1, 16, Train.TrainDirection.COUNTERCLOCKWISE, 8);
+        TrackSection.get(ETrackSection.H).block(br215);
+        new TrackSectionEnterRequest(br215, TrackSection.get(ETrackSection.H), TrackSection.get(ETrackSection.E));
         //region GUI Data Faker
 
 

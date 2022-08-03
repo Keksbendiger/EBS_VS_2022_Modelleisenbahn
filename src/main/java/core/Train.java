@@ -21,17 +21,19 @@ public class Train {
     private final String identifier;
     private final int trainId;
     private final int priority;
+    private final int delayMultiplier;
     private final int numLength; // Wagons oder Achsen oder whatever wir halt zählen können
 
     private TrainDirection direction;
     private ETrainState state;
 
-    public Train(String identifier, int trainId, int priority, int numLength, TrainDirection direction) {
+    public Train(String identifier, int trainId, int priority, int numLength, TrainDirection direction, int delayMultiplier) {
         this.identifier = identifier;
         this.trainId = trainId;
         this.priority = priority;
         this.numLength = numLength;
         this.direction = direction;
+        this.delayMultiplier = delayMultiplier;
         this.state = ETrainState.TRAINSTATION;
 
         trains.put(identifier, this);
@@ -71,6 +73,10 @@ public class Train {
 
     public int getPriority() {
         return priority;
+    }
+
+    public int getDelayMultiplier() {
+        return delayMultiplier;
     }
 
     public int getNumLength() {

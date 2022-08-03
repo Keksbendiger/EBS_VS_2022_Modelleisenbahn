@@ -20,7 +20,7 @@ public class TrackSectionEnterRequest {
     private EEnterRequestState state;
 
     public static void advanceRequest(TrackSectionEnterRequest request, boolean isIngoing, int count) {
-        if(shutdown) return;
+        if (shutdown) return;
 
         if (count != request.train.getNumLength()) {
             Logger.err("Wrong Axis Count on " + request.train + ". Expected: " + request.train.getNumLength() + " | Counted: " + count);
@@ -49,33 +49,35 @@ public class TrackSectionEnterRequest {
                 // maybe completely remove that state
                 request.state = EEnterRequestState.ENTERED_NEW;
 
-                // IF THIS REQUEST IS ABOUT BR142 WHICH IS REALLY SLOW AND ONLY MOVES BETWEEN B AND G WE DELAY THE RESERVATION
-                if(request.train.getTrainId() == 5 && request.entering.getIdentifier() == ETrackSection.G) {
+                long delay = Math.round(request.entering.getDelay() * 1000 * request.train.getDelayMultiplier());
+
+                if (request.entering.getIdentifier() == ETrackSection.G) {
+                    long additionalDelay = 8000;
+                    delay += additionalDelay;
+                    MqttClient.getInstance().sendTrainStop(String.valueOf(request.train.getTrainId()));
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            // we can close the request now
-                            // but we also need to create the follow request
-                            TrackSection nextTarget = TrackSection.get(RouteManager.getInstance().nextTargetOrAlternative(request.leaving.getIdentifier(), request.entering.getIdentifier()));
-                            requests.remove(request);
-                            new TrackSectionEnterRequest(request.train, request.entering, nextTarget);
-                            // check if nextTarget track is free
-                            if (nextTarget.isBlocked() && nextTarget.getTrain().getTrainId() != request.train.getTrainId()) {
-                                request.train.block();
-                            }
+                            MqttClient.getInstance().sendTrainStart(String.valueOf(request.train.getTrainId()));
                         }
-                    }, 13500);
-                } else {
-                    // we can close the request now
-                    // but we also need to create the follow request
-                    TrackSection nextTarget = TrackSection.get(RouteManager.getInstance().nextTargetOrAlternative(request.leaving.getIdentifier(), request.entering.getIdentifier()));
-                    requests.remove(request);
-                    new TrackSectionEnterRequest(request.train, request.entering, nextTarget);
-                    // check if nextTarget track is free
-                    if (nextTarget.isBlocked() && nextTarget.getTrain().getTrainId() != request.train.getTrainId()) {
-                        request.train.block();
-                    }
+                    }, additionalDelay);
                 }
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        // we can close the request now
+                        // but we also need to create the follow request
+                        TrackSection nextTarget = TrackSection.get(RouteManager.getInstance().nextTargetOrAlternative(request.leaving.getIdentifier(), request.entering.getIdentifier()));
+                        requests.remove(request);
+
+                        //request.train.block();
+                        new TrackSectionEnterRequest(request.train, request.entering, nextTarget);
+                        // check if nextTarget track is free
+                        //if (nextTarget.isBlocked() && nextTarget.getTrain().getTrainId() != request.train.getTrainId()) {
+                        //}
+                    }
+                }, delay);
 
                 break;
             default:
@@ -84,24 +86,25 @@ public class TrackSectionEnterRequest {
         }
     }
 
-    public static void checkRequestPermissions(TrackSection freedSection) {
+    public static TrackSectionEnterRequest checkRequestPermissions(TrackSection desiredSection) {
         // TODO maybe also check requests for alternatives
-        if (freedSection.isBlocked()) return;
+        if (desiredSection.isBlocked()) return null;
         TrackSectionEnterRequest validRequest = null;
         for (TrackSectionEnterRequest request : requests) {
-            if (request.entering == freedSection && !request.isPermitted()) {
-                if(validRequest == null) {
+            if (!request.entering.isBlocked() && !request.isPermitted() && request.checkRestrictions()) {
+                if (validRequest == null) {
                     validRequest = request;
                 } else {
-                    if(request.train.getPriority() > validRequest.train.getPriority()) {
+                    if (request.train.getPriority() > validRequest.train.getPriority()) {
                         validRequest = request;
                     }
                 }
             }
         }
-        if(validRequest != null) {
+        if (validRequest != null) {
             validRequest.permit();
         }
+        return validRequest;
     }
 
     public static TrackSectionEnterRequest getRequest(ETrackSection from, ETrackSection to) {
@@ -122,7 +125,21 @@ public class TrackSectionEnterRequest {
 
         requests.add(this);
         Logger.log("New Request [" + train + "] from (" + leaving + ") to (" + entering + ")");
-        checkRequestPermissions(entering);
+        TrackSectionEnterRequest permittedRequest = checkRequestPermissions(entering);
+
+        String err;
+        String err2;
+        if (permittedRequest == null) {
+            err = "null";
+            err2 = "null";
+        } else {
+            err = permittedRequest.train.getIdentifier();
+            err2 = !permittedRequest.train.getIdentifier().equals(train.getIdentifier()) + "";
+        }
+        Logger.err("Valid Request: " + err + " > " + err2);
+        if (permittedRequest == null || !permittedRequest.train.getIdentifier().equals(train.getIdentifier())) {
+            train.block();
+        }
     }
 
     public boolean isPermitted() {
@@ -132,9 +149,9 @@ public class TrackSectionEnterRequest {
     public void permit() {
         //if (this.entering.getIdentifier() == ETrackSection.B || this.entering.getIdentifier() == ETrackSection.G
         //|| this.leaving.getIdentifier() == ETrackSection.B /*DIRTY FIX MISSING SENSOR TODO REMOVE*/|| this.entering.getIdentifier() == ETrackSection.A || this.leaving.getIdentifier() == ETrackSection.A /*TODO REMOVE*/) {
-            this.state = EEnterRequestState.LEFT_OLD;
+        this.state = EEnterRequestState.LEFT_OLD;
         //} else {
-            //this.state = EEnterRequestState.PERMITTED;
+        //this.state = EEnterRequestState.PERMITTED;
         //}
         TrackSwitch ts = TrackSwitch.get(this.leaving.getIdentifier(), this.entering.getIdentifier());
         if (ts != null) {
@@ -158,5 +175,9 @@ public class TrackSectionEnterRequest {
         Logger.log("Permitted " + train + " to go to " + entering);
         entering.block(this.train);
         this.train.unblock();
+    }
+
+    private boolean checkRestrictions() {
+        return RouteManager.getInstance().checkConstraints(leaving.getIdentifier(), entering.getIdentifier());
     }
 }
